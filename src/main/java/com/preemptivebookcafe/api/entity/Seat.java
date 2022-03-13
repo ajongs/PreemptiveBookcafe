@@ -3,10 +3,7 @@ package com.preemptivebookcafe.api.entity;
 import com.preemptivebookcafe.api.enums.SeatStatus;
 import lombok.Getter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,7 +14,7 @@ public class Seat {
     @Column(name = "seat_id")
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
     private SeatStatus status;
