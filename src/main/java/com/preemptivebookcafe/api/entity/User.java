@@ -17,13 +17,13 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    private Long class_no;
+    private Long classNo;
     private String password;
     private String email;
 
 
-    public User(Long class_no, String password, String email){
-        this.class_no = class_no;
+    public User(Long classNo, String password, String email){
+        this.classNo = classNo;
         this.password = password;
         this.email = email;
     }
