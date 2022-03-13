@@ -12,4 +12,5 @@ public class RequestInputException extends DefaultException{
     public RequestInputException(String className, ErrorEnum errorEnum){
         super(className, errorEnum);
     }
+
 }

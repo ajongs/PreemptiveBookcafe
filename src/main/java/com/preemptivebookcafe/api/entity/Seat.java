@@ -24,4 +24,6 @@ public class Seat {
 
     //자리등록 시간
     private LocalDateTime registerAt;
+    private LocalDateTime updatedAt;
+
 }

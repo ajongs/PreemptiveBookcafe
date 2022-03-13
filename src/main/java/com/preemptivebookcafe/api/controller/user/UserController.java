@@ -1,5 +1,6 @@
 package com.preemptivebookcafe.api.controller.user;
 
+import com.preemptivebookcafe.api.dto.user.UserRequestDto;
 import com.preemptivebookcafe.api.dto.user.UserResponseDto;
 import com.preemptivebookcafe.api.entity.User;
 import com.preemptivebookcafe.api.service.user.UserService;
@@ -17,9 +18,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/user/signUp")
-    public ResponseEntity<UserResponseDto> signUp(@RequestBody User user) {
+    public ResponseEntity<UserResponseDto> signUp(@RequestBody UserRequestDto requestDto) {
         return ResponseEntity.ok()
-                .body(userService.signUp(user));
+                .body(userService.signUp(requestDto));
     }
 
     @PostMapping("/user/login")

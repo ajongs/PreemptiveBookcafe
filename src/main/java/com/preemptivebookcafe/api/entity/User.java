@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,9 +23,16 @@ public class User {
     private String email;
 
 
-    public User(Long classNo, String password, String email){
+    private String salt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Boolean isDeleted;
+
+
+    public User(Long classNo, String password, String email, String salt){
         this.classNo = classNo;
         this.password = password;
         this.email = email;
+        this.salt = salt;
     }
 }
