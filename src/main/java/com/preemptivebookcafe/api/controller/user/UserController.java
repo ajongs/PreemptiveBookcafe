@@ -24,10 +24,8 @@ public class UserController {
     }
 
     @PostMapping("/user/login")
-    public ResponseEntity<UserResponseDto> login(@RequestBody User user){
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.setEmail(user.getEmail());
-        userResponseDto.setClassNo(user.getClassNo());
-        return ResponseEntity.ok().body(userResponseDto);
+    public ResponseEntity login(@RequestBody UserRequestDto requestDto){
+        return ResponseEntity.ok()
+                .body(userService.login(requestDto));
     }
 }
