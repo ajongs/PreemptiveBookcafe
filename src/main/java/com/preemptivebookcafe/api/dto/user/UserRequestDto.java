@@ -15,7 +15,6 @@ public class UserRequestDto {
     @NotBlank(message="학번을 입력해 주세요.", groups = {ValidationGroup.signUp.class, ValidationGroup.login.class})
     private Long classNo;
 
-
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z0-9$@$!%*#?&]{8,15}$",
             message = "패스워드는 영문자,숫자,특수문자를 최소 1개씩 포함해야합니다.")
     @Size(min=8, max=15, message="비밀번호는 최소 8글자, 최대 15글자입니다.")

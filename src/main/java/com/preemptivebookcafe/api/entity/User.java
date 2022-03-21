@@ -2,11 +2,10 @@ package com.preemptivebookcafe.api.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,8 +25,16 @@ public class User {
     private String salt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @NotNull()
     private Boolean isDeleted;
 
+    @PrePersist
+    public void setDefaultValue(){
+        if(isDeleted == null){
+            isDeleted = false;
+        }
+    }
 
     public User(Long classNo, String password, String email, String salt){
         this.classNo = classNo;

@@ -19,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static io.jsonwebtoken.SignatureAlgorithm.HS256;
+
 @Component
 @RequiredArgsConstructor
 public class Jwt {
@@ -59,7 +61,8 @@ public class Jwt {
         return Jwts.builder()
                 .setClaims(claims)
                 .setHeaderParam("typ", "JWT")
-                .signWith(SignatureAlgorithm.HS256, key.getBytes(StandardCharsets.UTF_8))
+                .setHeaderParam("alg",HS256)
+                .signWith(HS256, key.getBytes(StandardCharsets.UTF_8))
                 .compact();
 
     }
