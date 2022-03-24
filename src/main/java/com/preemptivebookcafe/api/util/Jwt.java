@@ -27,6 +27,7 @@ public class Jwt {
 
     private final UserRepository userRepository;
 
+
     @Value("${access_token}")
     private String accessToken;
     @Value("${refresh_token}")
@@ -76,6 +77,14 @@ public class Jwt {
         }
         token = token.substring(7); // "Bearer " 제거
         Map<String, Object> payload = getPayload(token, flag);
+
+
+        String sub = (String)payload.get("sub");
+        if(sub.equals(accessToken) && !flag) {
+            throw new TokenException(ErrorEnum.FLAG_INVALID);
+        }else if(sub.equals(refreshToken) && flag){
+            throw new TokenException(ErrorEnum.FLAG_INVALID);
+        }
 
         Optional<User> optionalUser = userRepository.findByClassNo((Long) payload.get("classNo"));
         if (!optionalUser.isPresent()) {

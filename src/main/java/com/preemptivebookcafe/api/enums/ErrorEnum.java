@@ -17,6 +17,8 @@ public enum ErrorEnum {
     MALFORMED_ACCESS_TOKEN(903, "Access Token이 올바른 JWT 구조가 아닙니다.", HttpStatus.BAD_REQUEST ),
     UNSUPPORTED_ACCESS_TOKEN(904, "이 서버에서 만들어진 Access Token이 아닙니다.", HttpStatus.BAD_REQUEST ),
 
+    FLAG_INVALID(911, "토큰과 플래그가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+
     INVALID_REFRESH_TOKEN(921, "유효하지 않은 Refresh Token 입니다.", HttpStatus.BAD_REQUEST),
     EXPIRED_REFRESH_TOKEN(922, "만료된 Refresh Token 입니다.", HttpStatus.BAD_REQUEST ),
     MALFORMED_REFRESH_TOKEN(923, "Refresh Token이 올바른 JWT 구조가 아닙니다.", HttpStatus.BAD_REQUEST ),
