@@ -1,14 +1,14 @@
 package com.preemptivebookcafe.api.controller.user;
 
+import com.preemptivebookcafe.api.annotation.Auth;
 import com.preemptivebookcafe.api.dto.user.UserRequestDto;
 import com.preemptivebookcafe.api.dto.user.UserResponseDto;
-import com.preemptivebookcafe.api.entity.User;
 import com.preemptivebookcafe.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,4 +29,11 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(userService.login(requestDto));
     }
+
+    @Auth
+    @PostMapping("/test")
+    public String test(){
+        return "테스트 완료";
+    }
+
 }

@@ -77,16 +77,16 @@ public class Jwt {
         }
         token = token.substring(7); // "Bearer " 제거
         Map<String, Object> payload = getPayload(token, flag);
+        System.out.println(token);
 
-
-        String sub = (String)payload.get("sub");
+        String sub = (String)(payload.get("sub"));
         if(sub.equals(accessToken) && !flag) {
             throw new TokenException(ErrorEnum.FLAG_INVALID);
         }else if(sub.equals(refreshToken) && flag){
             throw new TokenException(ErrorEnum.FLAG_INVALID);
         }
 
-        Optional<User> optionalUser = userRepository.findByClassNo((Long) payload.get("classNo"));
+        Optional<User> optionalUser = userRepository.findByClassNo((Long.parseLong(String.valueOf(payload.get("classNo")))));
         if (!optionalUser.isPresent()) {
             //throw new token에 있는 유저가 존재하지 않음
             throw new TokenException(ErrorEnum.NO_USER_IN_TOKEN);
@@ -159,8 +159,8 @@ public class Jwt {
             } else {
                 //throw new RefreshTokenException(ErrorEnum.INVALID_REFRESHTOKEN);
             }
-            return payload;
         }
-        return null;
+
+        return payload;
     }
 }
