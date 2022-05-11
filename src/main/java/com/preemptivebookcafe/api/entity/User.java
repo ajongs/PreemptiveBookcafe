@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class User {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
@@ -33,6 +33,9 @@ public class User {
     public void setDefaultValue(){
         if(isDeleted == null){
             isDeleted = false;
+        }
+        if(createdAt==null){
+            createdAt = LocalDateTime.now();
         }
     }
 
