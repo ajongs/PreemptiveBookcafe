@@ -22,10 +22,11 @@ public class Seat {
     @Column(name = "seat_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)//, cascade = {CascadeType.ALL}
+    @OneToOne(fetch = FetchType.EAGER)//, cascade = {CascadeType.ALL}  // 기본이 원래 FetchType.EAGER
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Enumerated(EnumType.STRING)
     private SeatStatus status;
 
     //자리비움 시간
@@ -34,5 +35,10 @@ public class Seat {
     //자리등록 시간
     private LocalDateTime registerAt;
     private LocalDateTime updatedAt;
+
+    public void changeSeatStatus(SeatStatus status){
+        this.status = status;
+        this.leftOn = LocalDateTime.now();
+    }
 
 }

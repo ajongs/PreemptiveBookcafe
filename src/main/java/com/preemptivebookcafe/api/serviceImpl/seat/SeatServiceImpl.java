@@ -45,7 +45,7 @@ public class SeatServiceImpl implements SeatService {
 
     //좌석 선택 후 등록하기
     @Override
-    public void selectSeat(SeatRequestDto requestDto) {
+    public SeatResponseDto selectSeat(SeatRequestDto requestDto) {
         //해당 좌석 상태 확인 후
         Optional<Seat> optionalSeatEntity = seatRepository.findById(requestDto.getId());
         if(!optionalSeatEntity.isPresent()){ //null일때 오류
@@ -65,18 +65,53 @@ public class SeatServiceImpl implements SeatService {
                 .user(optionalUserEntity.get())
                 .status(SeatStatus.USED)
                 .registerAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         seatRepository.save(seat);
+
+        SeatResponseDto seatResponseDto = new SeatResponseDto();
+        seatResponseDto.setUpdatedAt(seat.getUpdatedAt());
+        seatResponseDto.setStatus(seat.getStatus());
+        seatResponseDto.setLeftOn(seat.getLeftOn());
+        seatResponseDto.setId(seat.getId());
+        seatResponseDto.setUser(seat.getUser());
+        return seatResponseDto;
     }
 
     @Override
-    public void reportSeat(SeatRequestDto requestDto) {
+    public SeatResponseDto reportSeat(SeatRequestDto requestDto) {
         //로그인 검증
+        validUserCheck(requestDto.getId());
+        //자리비움 신고
+        Optional<Seat> optionalSeatEntity = seatRepository.findById(requestDto.getId());
+        if(!optionalSeatEntity.isPresent()){
+            //throw new RequestInputException() 유효하지 않은 좌석 error 이넘 만들어야함
+        }
 
-        //신고
 
+        if(optionalSeatEntity.get().getStatus().equals(SeatStatus.AWAY) || optionalSeatEntity.get().getStatus().equals(SeatStatus.EMPTY)){
+            throw new RequestInputException(ErrorEnum.DO_NOT_REPORT);
+        }
+
+        Seat seat = optionalSeatEntity.get(); //TODO 나중에 자세히 보자
+        seat.changeSeatStatus(SeatStatus.AWAY);
+        seatRepository.save(seat);
         //신고 로그 등록 ( 신고자, 신고테이블)
 
+        SeatResponseDto seatResponseDto = new SeatResponseDto();
+        seatResponseDto.setUpdatedAt(seat.getUpdatedAt());
+        seatResponseDto.setStatus(seat.getStatus());
+        seatResponseDto.setLeftOn(seat.getLeftOn());
+        seatResponseDto.setId(seat.getId());
+        seatResponseDto.setUser(seat.getUser());
+        return seatResponseDto;
+    }
+
+    private void validUserCheck(Long userId){
+        Optional<Seat> optionalSeatEntity = seatRepository.findById(userId);
+        if(!optionalSeatEntity.isPresent()){ //null일때 오류
+            throw new RequestInputException(ErrorEnum.SEAT_ALREADY_USED); // 변경 할지 생각하자
+        }
     }
 }

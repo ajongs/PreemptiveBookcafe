@@ -1,5 +1,7 @@
 package com.preemptivebookcafe.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -18,10 +20,11 @@ public class User {
     private Long id;
 
     private Long classNo;
+    @JsonIgnore
     private String password;
     private String email;
 
-
+    @JsonIgnore
     private String salt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

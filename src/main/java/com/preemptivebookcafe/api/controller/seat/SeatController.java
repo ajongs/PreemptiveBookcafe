@@ -1,5 +1,6 @@
 package com.preemptivebookcafe.api.controller.seat;
 
+import com.preemptivebookcafe.api.annotation.Auth;
 import com.preemptivebookcafe.api.dto.seat.SeatRequestDto;
 import com.preemptivebookcafe.api.dto.seat.SeatResponseDto;
 import com.preemptivebookcafe.api.service.seat.SeatService;
@@ -19,9 +20,13 @@ public class SeatController {
     }
 
     @PostMapping()
-    public ResponseEntity selectSeat(@RequestBody SeatRequestDto requestDto){
-        seatService.selectSeat(requestDto);
-        return ResponseEntity.ok().body(requestDto.getId()+"번 좌석을 선택하였습니다.");
+    public ResponseEntity<SeatResponseDto> selectSeat(@RequestBody SeatRequestDto requestDto){
+        return ResponseEntity.ok().body(seatService.selectSeat(requestDto));
     }
 
+    @Auth
+    @PostMapping("/report")
+    public ResponseEntity<SeatResponseDto> reportSeat(@RequestBody SeatRequestDto requestDto){
+        return ResponseEntity.ok().body(seatService.reportSeat(requestDto));
+    }
 }
