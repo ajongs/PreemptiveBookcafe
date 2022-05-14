@@ -146,7 +146,7 @@ public class Jwt {
         return true;
     }
 
-    private Map getPayload(String token, boolean flag) {
+    public Map getPayload(String token, boolean flag) {
         String splitToken = token.split("\\.")[1];
         ObjectMapper ob = new ObjectMapper(); //json 파싱 직렬/역직렬화 객체
         Map<String, Object> payload = null;

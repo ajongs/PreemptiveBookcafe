@@ -12,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,5 +73,13 @@ public class UserServiceImpl implements UserService {
         newToken.put(refreshToken,jwt.createToken(user.getClassNo(), refreshToken));
 
         return newToken;
+    }
+
+    public Long getLoginUser(){
+        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = req.getHeader("Authorization");
+
+        Map payload = jwt.getPayload(token, true);
+        return Long.parseLong(String.valueOf(payload.get("classNo")));
     }
 }

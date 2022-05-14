@@ -10,9 +10,13 @@ import com.preemptivebookcafe.api.exception.RequestInputException;
 import com.preemptivebookcafe.api.repository.seat.SeatRepository;
 import com.preemptivebookcafe.api.repository.user.UserRepository;
 import com.preemptivebookcafe.api.service.seat.SeatService;
+import com.preemptivebookcafe.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +28,7 @@ public class SeatServiceImpl implements SeatService {
 
     private final UserRepository userRepository;
     private final SeatRepository seatRepository;
+    private final UserService userService;
 
     //모든 좌석 얻어오기
     @Override
@@ -81,15 +86,14 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     public SeatResponseDto reportSeat(SeatRequestDto requestDto) {
+
         //로그인 검증
-        validUserCheck(requestDto.getId());
+        Long classNo = userService.getLoginUser();
         //자리비움 신고
         Optional<Seat> optionalSeatEntity = seatRepository.findById(requestDto.getId());
         if(!optionalSeatEntity.isPresent()){
             //throw new RequestInputException() 유효하지 않은 좌석 error 이넘 만들어야함
         }
-
-
         if(optionalSeatEntity.get().getStatus().equals(SeatStatus.AWAY) || optionalSeatEntity.get().getStatus().equals(SeatStatus.EMPTY)){
             throw new RequestInputException(ErrorEnum.DO_NOT_REPORT);
         }
@@ -98,6 +102,7 @@ public class SeatServiceImpl implements SeatService {
         seat.changeSeatStatus(SeatStatus.AWAY);
         seatRepository.save(seat);
         //신고 로그 등록 ( 신고자, 신고테이블)
+
 
         SeatResponseDto seatResponseDto = new SeatResponseDto();
         seatResponseDto.setUpdatedAt(seat.getUpdatedAt());
