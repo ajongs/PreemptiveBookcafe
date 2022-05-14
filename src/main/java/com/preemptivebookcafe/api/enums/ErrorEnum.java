@@ -9,6 +9,8 @@ public enum ErrorEnum {
     ID_ALREADY_EXISTS(001, "이미 존재하는 아이디입니다.", HttpStatus.BAD_REQUEST),
 
 
+    SEAT_ALREADY_USED(300, "좌석이 사용중입니다.", HttpStatus.BAD_REQUEST),
+
     //jwt validation
     NULL_TOKEN(900, "JWT 토큰이 비었습니다. 확인해주십시오.", HttpStatus.BAD_REQUEST),
     NO_USER_IN_TOKEN(999, "해당 유저가 없거나 탈퇴한 유저입니다.", HttpStatus.BAD_REQUEST),
