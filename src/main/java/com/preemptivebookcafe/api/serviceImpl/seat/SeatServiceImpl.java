@@ -9,6 +9,7 @@ import com.preemptivebookcafe.api.enums.SeatStatus;
 import com.preemptivebookcafe.api.exception.RequestInputException;
 import com.preemptivebookcafe.api.repository.seat.SeatRepository;
 import com.preemptivebookcafe.api.repository.user.UserRepository;
+import com.preemptivebookcafe.api.service.log.LogService;
 import com.preemptivebookcafe.api.service.seat.SeatService;
 import com.preemptivebookcafe.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class SeatServiceImpl implements SeatService {
     private final UserRepository userRepository;
     private final SeatRepository seatRepository;
     private final UserService userService;
+    private final LogService logService;
 
     //모든 좌석 얻어오기
     @Override
@@ -88,7 +90,7 @@ public class SeatServiceImpl implements SeatService {
     public SeatResponseDto reportSeat(SeatRequestDto requestDto) {
 
         //로그인 검증
-        Long classNo = userService.getLoginUser();
+        Long classNo = userService.getLoginClassNo();
         //자리비움 신고
         Optional<Seat> optionalSeatEntity = seatRepository.findById(requestDto.getId());
         if(!optionalSeatEntity.isPresent()){
@@ -102,7 +104,7 @@ public class SeatServiceImpl implements SeatService {
         seat.changeSeatStatus(SeatStatus.AWAY);
         seatRepository.save(seat);
         //신고 로그 등록 ( 신고자, 신고테이블)
-
+        logService.createReportLog(seat.getUser(), userService.getUser(), seat);
 
         SeatResponseDto seatResponseDto = new SeatResponseDto();
         seatResponseDto.setUpdatedAt(seat.getUpdatedAt());

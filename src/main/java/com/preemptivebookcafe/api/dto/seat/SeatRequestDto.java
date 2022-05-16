@@ -13,7 +13,5 @@ import java.time.LocalDateTime;
 @Data
 public class SeatRequestDto {
     private Long id;
-
-    @OneToOne(fetch = FetchType.LAZY)
     private User user;
 }

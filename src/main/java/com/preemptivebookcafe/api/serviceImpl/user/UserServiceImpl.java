@@ -5,6 +5,7 @@ import com.preemptivebookcafe.api.dto.user.UserResponseDto;
 import com.preemptivebookcafe.api.entity.User;
 import com.preemptivebookcafe.api.enums.ErrorEnum;
 import com.preemptivebookcafe.api.exception.RequestInputException;
+import com.preemptivebookcafe.api.exception.TokenException;
 import com.preemptivebookcafe.api.repository.user.UserRepository;
 import com.preemptivebookcafe.api.service.user.UserService;
 import com.preemptivebookcafe.api.util.Jwt;
@@ -75,11 +76,20 @@ public class UserServiceImpl implements UserService {
         return newToken;
     }
 
-    public Long getLoginUser(){
+    public Long getLoginClassNo(){
         HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = req.getHeader("Authorization");
 
         Map payload = jwt.getPayload(token, true);
         return Long.parseLong(String.valueOf(payload.get("classNo")));
+    }
+
+    public User getUser(){
+        Long classNo = getLoginClassNo();
+        Optional<User> optionalUserEntity = userRepository.findByClassNo(classNo);
+        if(!optionalUserEntity.isPresent()){
+            throw new TokenException(ErrorEnum.NO_USER_IN_TOKEN);
+        }
+        return optionalUserEntity.get();
     }
 }
