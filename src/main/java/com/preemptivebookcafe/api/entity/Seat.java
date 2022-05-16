@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor //빌더 패턴을 이용하면 모든 매개변수를 받는 생성자가 필요로함.
 @NoArgsConstructor
 public class Seat {
-    //빌더 패턴을 이용하면 모든 매개변수를 받는 생성자가 필요로함.
+
 
 
     @Id
