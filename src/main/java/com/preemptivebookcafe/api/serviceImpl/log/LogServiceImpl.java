@@ -34,6 +34,17 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public LogResponseDto createRegisterLog(User user, Seat seat) {
-        return null;
+        Log registerLog = new Log(user, seat);
+        registerLog.changeLogEvent(LogEventEnum.REGISTER);
+
+        logRepository.save(registerLog);
+
+        LogResponseDto logResponseDto = new LogResponseDto();
+        logResponseDto.setId(registerLog.getId());
+        logResponseDto.setLogEvent(registerLog.getLogEvent());
+        logResponseDto.setSeat(registerLog.getSeat());
+        logResponseDto.setUser(registerLog.getUser());
+        logResponseDto.setLogTime(registerLog.getLogTime());
+        return logResponseDto;
     }
 }

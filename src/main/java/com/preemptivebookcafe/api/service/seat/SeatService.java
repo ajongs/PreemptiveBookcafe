@@ -13,4 +13,5 @@ public interface SeatService {
     //좌석 신고하기
     SeatResponseDto reportSeat(SeatRequestDto requestDto);
 
+    SeatResponseDto exitSeat(SeatRequestDto requestDto);
 }

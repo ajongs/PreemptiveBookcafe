@@ -40,4 +40,12 @@ public class Seat {
         this.leftOn = LocalDateTime.now();
     }
 
+    //퇴실 메소드
+    public void exit() {
+        this.user = null;
+        this.registerAt = null;
+        this.status = SeatStatus.EMPTY;
+        this.updatedAt = LocalDateTime.now();
+        this.leftOn = null;
+    }
 }

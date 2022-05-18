@@ -44,4 +44,9 @@ public class Log {
         this.seat = seat;
         this.logTime = LocalDateTime.now();
     }
+    public Log(User user, Seat seat) {
+        this.user = user;
+        this.seat = seat;
+        this.logTime = LocalDateTime.now();
+    }
 }

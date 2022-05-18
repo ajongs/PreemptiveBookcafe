@@ -13,6 +13,7 @@ import com.preemptivebookcafe.api.service.log.LogService;
 import com.preemptivebookcafe.api.service.seat.SeatService;
 import com.preemptivebookcafe.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -56,7 +57,10 @@ public class SeatServiceImpl implements SeatService {
         //해당 좌석 상태 확인 후
         Optional<Seat> optionalSeatEntity = seatRepository.findById(requestDto.getId());
         if(!optionalSeatEntity.isPresent()){ //null일때 오류
-            throw new RequestInputException(ErrorEnum.SEAT_ALREADY_USED); // 변경 할지 생각하자
+            throw new RequestInputException(ErrorEnum.NOT_EXIST_SEAT); // 변경 할지 생각하자
+        }
+        if(optionalSeatEntity.get().getStatus().equals(SeatStatus.USED)){
+            throw new RequestInputException(ErrorEnum.SEAT_ALREADY_USED);
         }
         //사용자 확인
         Optional<User> optionalUserEntity = userRepository.findByClassNo(requestDto.getUser().getClassNo());
@@ -77,13 +81,10 @@ public class SeatServiceImpl implements SeatService {
 
         seatRepository.save(seat);
 
-        SeatResponseDto seatResponseDto = new SeatResponseDto();
-        seatResponseDto.setUpdatedAt(seat.getUpdatedAt());
-        seatResponseDto.setStatus(seat.getStatus());
-        seatResponseDto.setLeftOn(seat.getLeftOn());
-        seatResponseDto.setId(seat.getId());
-        seatResponseDto.setUser(seat.getUser());
-        return seatResponseDto;
+        //등록 로그 등록
+        logService.createRegisterLog(seat.getUser(), seat);
+
+        return convertToDto(seat);
     }
 
     @Override
@@ -106,13 +107,30 @@ public class SeatServiceImpl implements SeatService {
         //신고 로그 등록 ( 신고자, 신고테이블)
         logService.createReportLog(seat.getUser(), userService.getUser(), seat);
 
-        SeatResponseDto seatResponseDto = new SeatResponseDto();
-        seatResponseDto.setUpdatedAt(seat.getUpdatedAt());
-        seatResponseDto.setStatus(seat.getStatus());
-        seatResponseDto.setLeftOn(seat.getLeftOn());
-        seatResponseDto.setId(seat.getId());
-        seatResponseDto.setUser(seat.getUser());
-        return seatResponseDto;
+
+        return convertToDto(seat);
+    }
+
+    @Override
+    public SeatResponseDto exitSeat(SeatRequestDto requestDto) {
+        Long classNo = requestDto.getUser().getClassNo();
+
+        Optional<User> optionalUserEntity = userRepository.findByClassNo(classNo);
+        if(!optionalUserEntity.isPresent()){
+            throw new RequestInputException(ErrorEnum.NO_USER_IN_TOKEN);
+        }
+        User user = optionalUserEntity.get();
+        //seat의 유저부분만 삭제해야지
+        Optional<Seat> optionalSeatEntity = seatRepository.findById(requestDto.getId());
+        if(!optionalSeatEntity.isPresent()){
+            throw new RequestInputException(ErrorEnum.NO_USER_IN_TOKEN);
+        }
+        Seat seat = optionalSeatEntity.get();
+        if(seat.getUser().equals(user) && requestDto.getId().equals(seat.getId())){
+            seat.exit();
+        }
+        seatRepository.save(seat);
+        return convertToDto(seat);
     }
 
     private void validUserCheck(Long userId){
@@ -120,5 +138,16 @@ public class SeatServiceImpl implements SeatService {
         if(!optionalSeatEntity.isPresent()){ //null일때 오류
             throw new RequestInputException(ErrorEnum.SEAT_ALREADY_USED); // 변경 할지 생각하자
         }
+    }
+
+    private SeatResponseDto convertToDto(Seat seat){
+        SeatResponseDto seatResponseDto = new SeatResponseDto();
+        seatResponseDto.setUpdatedAt(seat.getUpdatedAt());
+        seatResponseDto.setStatus(seat.getStatus());
+        seatResponseDto.setLeftOn(seat.getLeftOn());
+        seatResponseDto.setId(seat.getId());
+        seatResponseDto.setUser(seat.getUser());
+
+        return seatResponseDto;
     }
 }
