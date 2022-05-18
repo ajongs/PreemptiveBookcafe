@@ -9,11 +9,13 @@ import com.preemptivebookcafe.api.enums.SeatStatus;
 import com.preemptivebookcafe.api.exception.RequestInputException;
 import com.preemptivebookcafe.api.repository.seat.SeatRepository;
 import com.preemptivebookcafe.api.repository.user.UserRepository;
+import com.preemptivebookcafe.api.service.async.AsyncService;
 import com.preemptivebookcafe.api.service.log.LogService;
 import com.preemptivebookcafe.api.service.seat.SeatService;
 import com.preemptivebookcafe.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -32,6 +34,7 @@ public class SeatServiceImpl implements SeatService {
     private final SeatRepository seatRepository;
     private final UserService userService;
     private final LogService logService;
+    private final AsyncService asyncService;
 
     //모든 좌석 얻어오기
     @Override
@@ -80,13 +83,14 @@ public class SeatServiceImpl implements SeatService {
                 .build();
 
         seatRepository.save(seat);
-
+        //비동기 타이머 메소드 (퇴실처리)
+        asyncService.exitAsyncTimer(seat);
         //등록 로그 등록
         logService.createRegisterLog(seat.getUser(), seat);
 
         return convertToDto(seat);
     }
-
+//TODO 자리등록시 다른 자리에 앉는 중이면 좌석 변경 시키던가/ 오류 메세지 띄우던가
     @Override
     public SeatResponseDto reportSeat(SeatRequestDto requestDto) {
 
@@ -150,4 +154,6 @@ public class SeatServiceImpl implements SeatService {
 
         return seatResponseDto;
     }
+
+
 }
