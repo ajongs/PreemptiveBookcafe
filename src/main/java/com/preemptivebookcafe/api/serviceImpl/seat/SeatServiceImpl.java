@@ -5,6 +5,7 @@ import com.preemptivebookcafe.api.dto.seat.SeatResponseDto;
 import com.preemptivebookcafe.api.entity.Seat;
 import com.preemptivebookcafe.api.entity.User;
 import com.preemptivebookcafe.api.enums.ErrorEnum;
+import com.preemptivebookcafe.api.enums.LogEventEnum;
 import com.preemptivebookcafe.api.enums.SeatStatus;
 import com.preemptivebookcafe.api.exception.RequestInputException;
 import com.preemptivebookcafe.api.repository.seat.SeatRepository;
@@ -83,8 +84,9 @@ public class SeatServiceImpl implements SeatService {
                 .build();
 
         seatRepository.save(seat);
+
         //비동기 타이머 메소드 (퇴실처리)
-        asyncService.exitAsyncTimer(seat);
+        asyncService.exitAsyncTimer(seat, LogEventEnum.REGISTER);
         //등록 로그 등록
         logService.createRegisterLog(seat.getUser(), seat);
 
@@ -108,9 +110,9 @@ public class SeatServiceImpl implements SeatService {
         Seat seat = optionalSeatEntity.get(); //TODO 나중에 자세히 보자
         seat.changeSeatStatus(SeatStatus.AWAY);
         seatRepository.save(seat);
+        asyncService.exitAsyncTimer(seat, LogEventEnum.REPORT);
         //신고 로그 등록 ( 신고자, 신고테이블)
         logService.createReportLog(seat.getUser(), userService.getUser(), seat);
-
 
         return convertToDto(seat);
     }
