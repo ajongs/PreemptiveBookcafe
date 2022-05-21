@@ -1,4 +1,4 @@
-package com.preemptivebookcafe.api.annotation;
+package com.preemptivebookcafe.api.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;

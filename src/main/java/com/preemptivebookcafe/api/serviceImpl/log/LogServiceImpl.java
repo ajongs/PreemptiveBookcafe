@@ -10,6 +10,7 @@ import com.preemptivebookcafe.api.service.log.LogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @RequiredArgsConstructor
 public class LogServiceImpl implements LogService {
