@@ -8,9 +8,12 @@ import com.preemptivebookcafe.api.exception.RequestInputException;
 import com.preemptivebookcafe.api.repository.seat.SeatRepository;
 import com.preemptivebookcafe.api.service.async.AsyncService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
@@ -18,6 +21,11 @@ import java.util.Optional;
 public class AsyncServiceImpl implements AsyncService {
 
     private final SeatRepository seatRepository;
+    @Value("${rg_sleepTime}")
+    private long registerSleepTime;
+
+    @Value("${rp_sleepTime}")
+    private long reportSleepTime;
 
     @Async
     @Override
@@ -35,7 +43,7 @@ public class AsyncServiceImpl implements AsyncService {
             try {
                 seatEntity.updateThread(Thread.currentThread().getName());
                 seatRepository.save(seatEntity);
-                Thread.sleep(40000); //세시간 10800000
+                Thread.sleep(registerSleepTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 System.out.println("________________인터럽트 걸림--------------");
@@ -43,8 +51,10 @@ public class AsyncServiceImpl implements AsyncService {
         }
         else if(eventEnum.equals(LogEventEnum.REPORT)){
             //45분 신고 스레드는 시간 계산해서 45분보다 적으면 신고 못하게 하고 슬립
+
+
             try {
-                Thread.sleep(3000); //세시간 10800000
+                Thread.sleep(reportSleepTime);
 
                 String name = seatEntity.getUsedThread();
                 Thread[] tArray = new Thread[Thread.activeCount()];

@@ -15,6 +15,7 @@ import com.preemptivebookcafe.api.service.log.LogService;
 import com.preemptivebookcafe.api.service.seat.SeatService;
 import com.preemptivebookcafe.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +38,12 @@ public class SeatServiceImpl implements SeatService {
     private final UserService userService;
     private final LogService logService;
     private final AsyncService asyncService;
+
+    @Value("${rg_sleepTime}")
+    private long registerSleepTime;
+
+    @Value("${rp_sleepTime}")
+    private long reportSleepTime;
 
     //모든 좌석 얻어오기
     @Override
@@ -107,7 +115,14 @@ public class SeatServiceImpl implements SeatService {
             throw new RequestInputException(ErrorEnum.DO_NOT_REPORT);
         }
 
+
         Seat seat = optionalSeatEntity.get(); //TODO 나중에 자세히 보자
+        long between = ChronoUnit.SECONDS.between(seat.getRegisterAt(), LocalDateTime.now());
+        long remainTime =  registerSleepTime - between;
+        System.out.println("------------remainTime------------"+remainTime);
+        if(remainTime < reportSleepTime){
+            throw new RequestInputException(ErrorEnum.SEAT_INSUFFICIENT_TIME);
+        }
         seat.changeSeatStatus(SeatStatus.AWAY);
         seatRepository.save(seat);
         asyncService.exitAsyncTimer(seat, LogEventEnum.REPORT);
