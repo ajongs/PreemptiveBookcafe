@@ -38,3 +38,5 @@ out/
 
 ### properties ###
 src/main/resources/application.properties
+
+src/main/resources/firebase/firebase_key.json
