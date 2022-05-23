@@ -65,10 +65,15 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findByClassNo(requestDto.getClassNo());
         if(!optionalUser.isPresent()){
             //존재하지 않는 classNO
-            throw new RequestInputException(ErrorEnum.ID_ALREADY_EXISTS);
+            throw new RequestInputException(ErrorEnum.INVALID_CLASS_NO);
         }
 
         User user = optionalUser.get();
+        if(!BCrypt.checkpw(requestDto.getPassword(), user.getPassword())){
+            //비번 오류
+            throw new RequestInputException(ErrorEnum.INVALID_PASSWORD);
+        }
+
         Map<String, String> newToken = new HashMap<>();
         newToken.put(accessToken, jwt.createToken(user.getClassNo(), accessToken));
         newToken.put(refreshToken,jwt.createToken(user.getClassNo(), refreshToken));
