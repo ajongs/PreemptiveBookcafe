@@ -7,12 +7,15 @@ import org.springframework.http.HttpStatus;
 public enum ErrorEnum {
     //signUp 관련 0으로 시작
     ID_ALREADY_EXISTS(001, "이미 존재하는 아이디입니다.", HttpStatus.BAD_REQUEST),
-
+    INVALID_CLASS_NO(002, "유효하지 않은 학번입니다.", HttpStatus.BAD_REQUEST),
+    //user 관련
+    INVALID_PASSWORD(100, "비밀번호가 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
 
     SEAT_ALREADY_USED(300, "좌석이 사용중입니다.", HttpStatus.BAD_REQUEST),
     DO_NOT_REPORT(301, "빈좌석이거나 이미 신고된 좌석은 신고할 수 없습니다.", HttpStatus.BAD_REQUEST),
     NOT_EXIST_SEAT(302, "존재하지 않는 좌석번호 입니다.", HttpStatus.BAD_REQUEST),
     SEAT_INSUFFICIENT_TIME(303, "해당 좌석 사용시간이 얼마 남지 않아 신고할 수 없습니다.", HttpStatus.BAD_REQUEST),
+
     //jwt validation
     NULL_TOKEN(900, "JWT 토큰이 비었습니다. 확인해주십시오.", HttpStatus.BAD_REQUEST),
     NO_USER_IN_TOKEN(999, "유효하지 않은 학번입니다.", HttpStatus.BAD_REQUEST),

@@ -16,7 +16,7 @@ public class SeatController {
     private final SeatService seatService;
     @GetMapping()
     public ResponseEntity getSeats(){
-        return ResponseEntity.ok().body("logics");
+        return ResponseEntity.ok().body(seatService.getAllSeats());
     }
 
     //좌석 선택
