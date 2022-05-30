@@ -51,8 +51,8 @@ public class AsyncServiceImpl implements AsyncService {
         }
         else if(eventEnum.equals(LogEventEnum.REPORT)){
             //45분 신고 스레드는 시간 계산해서 45분보다 적으면 신고 못하게 하고 슬립
-
-
+            seatEntity.updateReportThread(Thread.currentThread().getName());
+            seatRepository.save(seatEntity);
             try {
                 Thread.sleep(reportSleepTime);
 
@@ -68,15 +68,46 @@ public class AsyncServiceImpl implements AsyncService {
                 e.printStackTrace();
             }
         }
-        seatEntity.updateThread("");
         seatEntity.exit();
         seatRepository.save(seatEntity);
 
     }
+
+    @Async
+    public void changeThread(Seat seat, long time){
+        String exThreadName = seat.getUsedThread();
+        Thread[] tArray = new Thread[Thread.activeCount()];
+        Thread.enumerate(tArray);
+        for (Thread thread : tArray) {
+            if(thread.getName().equals(exThreadName)){
+                thread.interrupt();
+            }
+        }
+
+        seat.updateThread(Thread.currentThread().toString());
+        seatRepository.save(seat);
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        seat.exit();
+        seatRepository.save(seat);
+    }
+
 
     //@Async 규칙 1. 같은 클래스안에서 호출하면 안됨.(내부 호출)
     // 규칙 2. 반환 타입이 void 이어야함.
     // 규칙 3. public 만 가능
 
 
+    @Override
+    public void reportCancel(Long classNo) {
+        /*
+        Optional<Seat> optionalSeatEntity = seatRepository.findByClassNo(classNo);
+        if(!optionalSeatEntity.isPresent()){
+            throw new RequestInputException(ErrorEnum.ID_ALREADY_EXISTS);
+        }*/
+        //좌석 번호 찾아서 있으면
+    }
 }

@@ -14,4 +14,5 @@ import java.time.LocalDateTime;
 public class SeatRequestDto {
     private Long id;
     private User user;
+
 }

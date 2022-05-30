@@ -2,6 +2,8 @@ package com.preemptivebookcafe.api.serviceImpl.seat;
 
 import com.preemptivebookcafe.api.dto.seat.SeatRequestDto;
 import com.preemptivebookcafe.api.dto.seat.SeatResponseDto;
+import com.preemptivebookcafe.api.dto.user.KioskUserResponseDto;
+import com.preemptivebookcafe.api.dto.user.UserRequestDto;
 import com.preemptivebookcafe.api.entity.Seat;
 import com.preemptivebookcafe.api.entity.User;
 import com.preemptivebookcafe.api.enums.ErrorEnum;
@@ -16,13 +18,8 @@ import com.preemptivebookcafe.api.service.seat.SeatService;
 import com.preemptivebookcafe.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -80,8 +77,6 @@ public class SeatServiceImpl implements SeatService {
             throw new RequestInputException(ErrorEnum.NO_USER_IN_TOKEN);
         }
 
-
-
         //문제 없다면 등록 진행
         Seat seat = Seat.builder()
                 .id(optionalSeatEntity.get().getId())
@@ -109,7 +104,7 @@ public class SeatServiceImpl implements SeatService {
         //자리비움 신고
         Optional<Seat> optionalSeatEntity = seatRepository.findById(requestDto.getId());
         if(!optionalSeatEntity.isPresent()){
-            //throw new RequestInputException() 유효하지 않은 좌석 error 이넘 만들어야함
+            throw new RequestInputException(ErrorEnum.NOT_EXIST_SEAT);// 유효하지 않은 좌석 error 이넘 만들어야함
         }
         if(optionalSeatEntity.get().getStatus().equals(SeatStatus.AWAY) || optionalSeatEntity.get().getStatus().equals(SeatStatus.EMPTY)){
             throw new RequestInputException(ErrorEnum.DO_NOT_REPORT);
@@ -172,5 +167,27 @@ public class SeatServiceImpl implements SeatService {
         return seatResponseDto;
     }
 
+    @Override
+    public SeatResponseDto changeSeat(SeatRequestDto requestDto) {
+        //TODO requestDTO 에서 seat id 를 받아오고
+        long seat_id = requestDto.getId();
+
+        //TODO repository 가서 seat id에 해당하는 유저와 요청한 유저가 같은지 체크
+        Optional<Seat> optionalSeatEntity = seatRepository.findById(seat_id);
+        if(!optionalSeatEntity.isPresent()){
+            throw new RequestInputException(ErrorEnum.NOT_EXIST_SEAT);
+        }
+
+        //TODO 해당 좌석에 이미 사용중인 사람이 있는경우
+        Seat seat = optionalSeatEntity.get();
+        if(seat.getUser()!=null){
+            throw new RequestInputException(ErrorEnum.SEAT_ALREADY_USED);
+        }
+        //TODO 같다면 지금시간 - 등록시간 빼서 남은 시간으로 비동기 스레드 시작, 이전 스레드 찾아서 제거
+        long between = ChronoUnit.SECONDS.between(seat.getRegisterAt(), LocalDateTime.now());
+        asyncService.changeThread(seat, between);
+
+        return null;
+    }
 
 }

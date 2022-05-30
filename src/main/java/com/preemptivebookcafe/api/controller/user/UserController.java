@@ -1,6 +1,7 @@
 package com.preemptivebookcafe.api.controller.user;
 
 import com.preemptivebookcafe.api.annotation.Auth;
+import com.preemptivebookcafe.api.dto.user.KioskUserResponseDto;
 import com.preemptivebookcafe.api.dto.user.UserRequestDto;
 import com.preemptivebookcafe.api.dto.user.UserResponseDto;
 import com.preemptivebookcafe.api.service.user.UserService;
@@ -36,4 +37,11 @@ public class UserController {
         return "테스트 완료";
     }
 
+
+    @PostMapping("/kiosk/login")
+    public ResponseEntity<KioskUserResponseDto> kioskLogin(@RequestBody UserRequestDto requestDto){
+        System.out.println("================"+requestDto.getClassNo());
+        return ResponseEntity.ok()
+                .body(userService.kioskLogin(requestDto));
+    }
 }

@@ -2,6 +2,8 @@ package com.preemptivebookcafe.api.service.seat;
 
 import com.preemptivebookcafe.api.dto.seat.SeatRequestDto;
 import com.preemptivebookcafe.api.dto.seat.SeatResponseDto;
+import com.preemptivebookcafe.api.dto.user.KioskUserResponseDto;
+import com.preemptivebookcafe.api.dto.user.UserRequestDto;
 
 import java.util.List;
 
@@ -14,4 +16,7 @@ public interface SeatService {
     SeatResponseDto reportSeat(SeatRequestDto requestDto);
 
     SeatResponseDto exitSeat(SeatRequestDto requestDto);
+
+    SeatResponseDto changeSeat(SeatRequestDto requestDto);
+
 }

@@ -32,6 +32,7 @@ public class Seat {
     private LocalDateTime leftOn;
 
     private String usedThread;
+    private String reportThread;
 
     //자리등록 시간
     private LocalDateTime registerAt;
@@ -49,8 +50,13 @@ public class Seat {
         this.status = SeatStatus.EMPTY;
         this.updatedAt = LocalDateTime.now();
         this.leftOn = null;
+        this.usedThread = null;
+        this.reportThread = null;
     }
     public void updateThread(String threadName){
         usedThread = threadName;
+    }
+    public void updateReportThread(String threadName){
+        reportThread = threadName;
     }
 }

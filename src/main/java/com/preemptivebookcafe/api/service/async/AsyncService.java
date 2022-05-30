@@ -8,4 +8,11 @@ public interface AsyncService {
 
     @Async
     public void exitAsyncTimer(Seat seat, LogEventEnum eventEnum);
+
+    @Async
+    public void changeThread(Seat seat, long time);
+
+    @Async
+    public void reportCancel(Long classNo);
+
 }

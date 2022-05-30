@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/seats")
@@ -15,7 +17,7 @@ public class SeatController {
 
     private final SeatService seatService;
     @GetMapping()
-    public ResponseEntity getSeats(){
+    public ResponseEntity<List<SeatResponseDto>> getSeats(){
         return ResponseEntity.ok().body(seatService.getAllSeats());
     }
 
@@ -30,6 +32,11 @@ public class SeatController {
     @PostMapping("/report")
     public ResponseEntity<SeatResponseDto> reportSeat(@RequestBody SeatRequestDto requestDto){
         return ResponseEntity.ok().body(seatService.reportSeat(requestDto));
+    }
+
+    @PutMapping()
+    public ResponseEntity<SeatResponseDto> changeSeat(@RequestBody SeatRequestDto requestDto){
+        return ResponseEntity.ok().body(seatService.changeSeat(requestDto));
     }
 
     //퇴실
