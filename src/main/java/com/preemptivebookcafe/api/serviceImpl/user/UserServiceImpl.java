@@ -97,17 +97,30 @@ public class UserServiceImpl implements UserService {
         }
         User user = optionalUserEntity.get();
         Optional<Seat> optionalSeatEntity = seatRepository.findByUser(user);
-        if(!optionalSeatEntity.isPresent()){ //처음 방문하는 경우는 seat정보가 없음
-            return null; //TODO null로 반환하는거 프론트에서도 받을 수 있나?
-        }
         KioskUserResponseDto kioskUserResponseDto = new KioskUserResponseDto();
+        if(!optionalSeatEntity.isPresent()){ //처음 방문하는 경우는 seat정보가 없음
+            //kioskUserResponseDto.setNull(true);
+            return kioskUserResponseDto; //TODO null로 반환하는거 프론트에서도 받을 수 있나?
+        }
+
 
         Seat seat = optionalSeatEntity.get();
         //신고당한 좌석의 학번일 경우는 신고 푸는 로직 실행을 위해 isReportCancel 에 true 넣어준다 .
         if(seat.getStatus().equals(SeatStatus.AWAY)){
-            kioskUserResponseDto.setReportCancel(true);
+            //신고 스레드 없애야함
+            String reportThread = seat.getReportThread();
+            Thread[] tArray = new Thread[Thread.activeCount()];
+            Thread.enumerate(tArray);
+            for (Thread thread : tArray) {
+                if(thread.getName().equals(reportThread)){
+                    thread.interrupt();
+                }
+            }
+            seat.updateReportThread(null);
+            seatRepository.save(seat);
+            //kioskUserResponseDto.setReportCancel(true);
         } // 좌석 변경하려고 하는경우는 아래 로직을 따라감
-        else kioskUserResponseDto.setReportCancel(false);
+        //else kioskUserResponseDto.setReportCancel(false);
 
         kioskUserResponseDto.setId(seat.getId());
         kioskUserResponseDto.setUser(seat.getUser());
