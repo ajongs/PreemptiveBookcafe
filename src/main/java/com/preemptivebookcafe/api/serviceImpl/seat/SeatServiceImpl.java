@@ -74,9 +74,19 @@ public class SeatServiceImpl implements SeatService {
         //사용자 확인
         Optional<User> optionalUserEntity = userRepository.findByClassNo(requestDto.getUser().getClassNo());
         if(!optionalUserEntity.isPresent()){
-            throw new RequestInputException(ErrorEnum.NO_USER_IN_TOKEN);
+            throw new RequestInputException(ErrorEnum.INVALID_CLASS_NO);
         }
-
+        //사용자가 이미 좌석 선택시 거부
+        User user = optionalUserEntity.get();
+        Optional<Seat> optionalUserHasSeat = seatRepository.findByUser(user);
+        if(optionalUserHasSeat.isPresent()){
+            Seat testSeat = optionalUserHasSeat.get();
+            System.out.println("testSeat.getId() = " + testSeat.getId());
+            System.out.println("testSeat.getStatus() = " + testSeat.getStatus());
+            User isSameUser = testSeat.getUser();
+            System.out.println("isSameUser.getClassNo() = " + isSameUser.getClassNo());
+            throw new RequestInputException(ErrorEnum.ALEADY_HAS_SEAT);
+        }
         //문제 없다면 등록 진행
         Seat seat = Seat.builder()
                 .id(optionalSeatEntity.get().getId())
