@@ -75,16 +75,9 @@ public class AsyncServiceImpl implements AsyncService {
 
     @Async
     public void changeThread(Seat seat, long time){
-        String exThreadName = seat.getUsedThread();
-        Thread[] tArray = new Thread[Thread.activeCount()];
-        Thread.enumerate(tArray);
-        for (Thread thread : tArray) {
-            if(thread.getName().equals(exThreadName)){
-                thread.interrupt();
-            }
-        }
-
-        seat.updateThread(Thread.currentThread().toString());
+        String threadName = Thread.currentThread().getName();
+        System.out.println("threadName = " + threadName);
+        seat.updateThread(threadName);
         seatRepository.save(seat);
         try {
             Thread.sleep(time);

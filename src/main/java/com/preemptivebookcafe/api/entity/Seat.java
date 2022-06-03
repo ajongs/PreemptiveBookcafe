@@ -38,6 +38,13 @@ public class Seat {
     private LocalDateTime registerAt;
     private LocalDateTime updatedAt;
 
+    public void changeSeat(User user, LocalDateTime registerAt){
+        this.user = user;
+        this.registerAt = registerAt;
+        updatedAt = LocalDateTime.now();
+        status = SeatStatus.USED;
+    }
+
     public void changeSeatStatus(SeatStatus status){
         this.status = status;
         this.leftOn = LocalDateTime.now();

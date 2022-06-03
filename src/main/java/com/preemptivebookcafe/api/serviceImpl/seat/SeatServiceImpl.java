@@ -85,7 +85,7 @@ public class SeatServiceImpl implements SeatService {
             System.out.println("testSeat.getStatus() = " + testSeat.getStatus());
             User isSameUser = testSeat.getUser();
             System.out.println("isSameUser.getClassNo() = " + isSameUser.getClassNo());
-            throw new RequestInputException(ErrorEnum.ALEADY_HAS_SEAT);
+            throw new RequestInputException(ErrorEnum.ALREADY_HAS_SEAT);
         }
         //문제 없다면 등록 진행
         Seat seat = Seat.builder()
@@ -143,15 +143,19 @@ public class SeatServiceImpl implements SeatService {
 
         Optional<User> optionalUserEntity = userRepository.findByClassNo(classNo);
         if(!optionalUserEntity.isPresent()){
-            throw new RequestInputException(ErrorEnum.NO_USER_IN_TOKEN);
+            throw new RequestInputException(ErrorEnum.INVALID_CLASS_NO);
         }
         User user = optionalUserEntity.get();
         //seat의 유저부분만 삭제해야지
-        Optional<Seat> optionalSeatEntity = seatRepository.findById(requestDto.getId());
+        Optional<Seat> optionalSeatEntity = seatRepository.findByUser(user);
         if(!optionalSeatEntity.isPresent()){
-            throw new RequestInputException(ErrorEnum.NO_USER_IN_TOKEN);
+            throw new RequestInputException(ErrorEnum.NOT_HAS_SEAT);
         }
+
         Seat seat = optionalSeatEntity.get();
+        if(seat.getId() != requestDto.getId()){
+            throw new RequestInputException(ErrorEnum.INCONSISTENCY_SEAT_ID);
+        }
         if(seat.getUser().equals(user) && requestDto.getId().equals(seat.getId())){
             seat.exit();
         }
@@ -169,6 +173,7 @@ public class SeatServiceImpl implements SeatService {
     private SeatResponseDto convertToDto(Seat seat){
         SeatResponseDto seatResponseDto = new SeatResponseDto();
         seatResponseDto.setUpdatedAt(seat.getUpdatedAt());
+        seatResponseDto.setRegisterAt(seat.getRegisterAt());
         seatResponseDto.setStatus(seat.getStatus());
         seatResponseDto.setLeftOn(seat.getLeftOn());
         seatResponseDto.setId(seat.getId());
@@ -179,10 +184,27 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     public SeatResponseDto changeSeat(SeatRequestDto requestDto) {
-        //TODO requestDTO 에서 seat id 를 받아오고
+        //TODO requestDTO 에서 변경하려는 seat id 를 받아오고
         long seat_id = requestDto.getId();
+        long classNo = requestDto.getUser().getClassNo();
 
-        //TODO repository 가서 seat id에 해당하는 유저와 요청한 유저가 같은지 체크
+        //TODO classNo가 존재하는지 체크 & 좌석이 있는지 체크
+        Optional<User> optionalUserEntity = userRepository.findByClassNo(classNo);
+        if(!optionalUserEntity.isPresent()){
+            throw new RequestInputException(ErrorEnum.INVALID_CLASS_NO);
+        }
+        User user = optionalUserEntity.get();
+
+        //기존 좌석 체크
+        Optional<Seat> optionalUserHasSeatEntity = seatRepository.findByUser(user);
+        if(!optionalUserHasSeatEntity.isPresent()){ //유저가 사용중인 좌석이 없다면 오류
+            throw new RequestInputException(ErrorEnum.NOT_HAS_SEAT);
+        }
+        Seat userHasSeat = optionalUserHasSeatEntity.get();
+
+
+
+        //TODO repository 가서 바꿀 seat id가 존재하는지 확인
         Optional<Seat> optionalSeatEntity = seatRepository.findById(seat_id);
         if(!optionalSeatEntity.isPresent()){
             throw new RequestInputException(ErrorEnum.NOT_EXIST_SEAT);
@@ -194,10 +216,34 @@ public class SeatServiceImpl implements SeatService {
             throw new RequestInputException(ErrorEnum.SEAT_ALREADY_USED);
         }
         //TODO 같다면 지금시간 - 등록시간 빼서 남은 시간으로 비동기 스레드 시작, 이전 스레드 찾아서 제거
-        long between = ChronoUnit.SECONDS.between(seat.getRegisterAt(), LocalDateTime.now());
-        asyncService.changeThread(seat, between);
+        LocalDateTime exRegisterAt = userHasSeat.getRegisterAt();
+        long between = ChronoUnit.SECONDS.between(exRegisterAt, LocalDateTime.now());
+        long time = registerSleepTime- between;
 
-        return null;
+
+        String exThreadName = userHasSeat.getUsedThread();
+        Thread[] tArray = new Thread[Thread.activeCount()];
+        Thread.enumerate(tArray);
+        for (Thread thread : tArray) {
+            if(thread.getName().equals(exThreadName)){
+                System.out.println(thread.getName()+" 삭제");
+                thread.interrupt();
+            }
+        }
+        //이전 자리 퇴실처리
+        userHasSeat.exit();
+        seatRepository.save(userHasSeat);
+
+        //새로운 자리 등록
+        seat.changeSeat(user, exRegisterAt);
+        seatRepository.save(seat);
+
+        //출력을 위한 변환
+        SeatResponseDto seatResponseDto = convertToDto(seat);
+
+        //남은 시간만큼만 스레드 실행
+        asyncService.changeThread(seat, time);
+        return seatResponseDto;
     }
 
 }
