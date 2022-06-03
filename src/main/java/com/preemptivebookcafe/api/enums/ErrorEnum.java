@@ -27,6 +27,7 @@ public enum ErrorEnum {
     UNSUPPORTED_ACCESS_TOKEN(904, "이 서버에서 만들어진 Access Token이 아닙니다.", HttpStatus.BAD_REQUEST ),
 
     FLAG_INVALID(911, "토큰과 플래그가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+    NOT_EXIST_IN_THIS_TOKEN(912, "토큰의 id에 해당하는 유저가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
 
     INVALID_REFRESH_TOKEN(921, "유효하지 않은 Refresh Token 입니다.", HttpStatus.BAD_REQUEST),
     EXPIRED_REFRESH_TOKEN(922, "만료된 Refresh Token 입니다.", HttpStatus.BAD_REQUEST ),

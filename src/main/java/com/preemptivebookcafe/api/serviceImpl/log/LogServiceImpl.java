@@ -66,6 +66,27 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public List<LogResponseDto> getRegisterLog() {
+        User user = getUserFromToken();
+        Optional<List<Log>> optionalLogResponseDtoList = logRepository.findByLogEventAndUser(LogEventEnum.REGISTER, user);
+        if(!optionalLogResponseDtoList.isPresent()){
+            return new ArrayList<LogResponseDto>();
+        }
+
+        return convertToLogDto(optionalLogResponseDtoList.get());
+    }
+
+    @Override
+    public List<LogResponseDto> getReportLog() {
+        User user = getUserFromToken();
+        Optional<List<Log>> optionalLogResponseDtoList = logRepository.findByLogEventAndReporter(LogEventEnum.REPORT, user);
+        if(!optionalLogResponseDtoList.isPresent()){
+            //throw new RequestInputException(ErrorEnum.ID_ALREADY_EXISTS);
+            return new ArrayList<LogResponseDto>();
+        }
+        return convertToLogDto(optionalLogResponseDtoList.get());
+    }
+
+    private User getUserFromToken(){
         HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
         String token = req.getHeader("Authorization");
 
@@ -73,26 +94,10 @@ public class LogServiceImpl implements LogService {
         long id = Long.parseLong(String.valueOf(payload.get("id")));
         Optional<User> optionalUserEntity = userRepository.findById(id);
         if(!optionalUserEntity.isPresent()){
-            throw new RequestInputException(ErrorEnum.INVALID_CLASS_NO);
-            //변경해야함 유효하지 않은 토큰이라고 하는게 낫지?
+            throw new RequestInputException(ErrorEnum.NOT_EXIST_IN_THIS_TOKEN);
         }
-        User user = optionalUserEntity.get();
-        System.out.println(user.getClassNo());
-
-
-        Optional<List<Log>> optionalLogResponseDtoList = logRepository.findByLogEventAndUser(LogEventEnum.REGISTER, user);
-        if(!optionalLogResponseDtoList.isPresent()){
-            throw new RequestInputException(ErrorEnum.ID_ALREADY_EXISTS);
-        }
-        List<Log> list = optionalLogResponseDtoList.get();
-        for (Log log : list) {
-            System.out.println("log.getId() = " + log.getId());
-            System.out.println("log.getLogEvent() = " + log.getLogEvent());
-            System.out.println("log.getLogTime() = " + log.getLogTime());
-        }
-        return convertToLogDto(list);
+        return optionalUserEntity.get();
     }
-
     private List<LogResponseDto> convertToLogDto(List<Log> logs){
         List<LogResponseDto> logResponseDtos = new ArrayList<>();
         for (Log log : logs) {

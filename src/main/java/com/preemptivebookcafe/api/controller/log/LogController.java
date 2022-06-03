@@ -21,4 +21,9 @@ public class LogController {
         return ResponseEntity.ok().body(logService.getRegisterLog());
     }
 
+    @GetMapping("log/report")
+    public ResponseEntity<List<LogResponseDto>> getLogReport() {
+        return ResponseEntity.ok().body(logService.getReportLog());
+    }
+
 }

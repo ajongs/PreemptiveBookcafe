@@ -15,4 +15,5 @@ public interface LogService {
 
     List<LogResponseDto> getRegisterLog();
 
+    List<LogResponseDto> getReportLog();
 }

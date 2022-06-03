@@ -43,7 +43,8 @@ public class Jwt {
 
         Calendar calendar = Calendar.getInstance();
         if (subject.equals(accessToken)) {
-            calendar.add(Calendar.HOUR, 1);
+            calendar.add(Calendar.SECOND, 30);
+            //calendar.add(Calendar.HOUR, 1);
         } else {
             calendar.add(Calendar.DATE, 8);
         }
