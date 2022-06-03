@@ -49,6 +49,7 @@ public class Jwt {
         }
 
         Map<String, Object> payload = new HashMap<>();
+        payload.put("id", user.getId());
         payload.put("classNo", classNo);
 
         Claims claims = Jwts.claims(payload)
