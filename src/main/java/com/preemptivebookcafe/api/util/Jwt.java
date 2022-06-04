@@ -43,7 +43,7 @@ public class Jwt {
 
         Calendar calendar = Calendar.getInstance();
         if (subject.equals(accessToken)) {
-            calendar.add(Calendar.SECOND, 30);
+            calendar.add(Calendar.HOUR, 1);
             //calendar.add(Calendar.HOUR, 1);
         } else {
             calendar.add(Calendar.DATE, 8);
@@ -79,7 +79,6 @@ public class Jwt {
         }
         token = token.substring(7); // "Bearer " 제거
         Map<String, Object> payload = getPayload(token, flag);
-        System.out.println(token);
 
         String sub = (String)(payload.get("sub"));
         if(sub.equals(accessToken) && !flag) {
@@ -97,9 +96,20 @@ public class Jwt {
         String key = user.getSalt();
 
         try{
+
             Claims claims = Jwts.parser().setSigningKey(key.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
             String subject = claims.getSubject();
 
+        }catch (ExpiredJwtException e){
+            //만료된 토큰
+            if(flag){ //accessToken
+                //throw new 엑세스 토큰 오류 중 만료 오류
+                throw new TokenException("TokenException", ErrorEnum.EXPIRED_ACCESS_TOKEN);
+            }else{
+                //throw new 리프레시 토큰 오류 중 만료 오류
+                throw new TokenException("TokenException", ErrorEnum.EXPIRED_REFRESH_TOKEN);
+
+            }
         }
         catch (SignatureException e){
             //서명 오류
@@ -122,17 +132,6 @@ public class Jwt {
                 throw new TokenException("TokenException", ErrorEnum.MALFORMED_REFRESH_TOKEN);
 
             }
-        }catch (ExpiredJwtException e){
-            //만료된 토큰
-            if(flag){ //accessToken
-                //throw new 엑세스 토큰 오류 중 만료 오류
-                throw new TokenException("TokenException", ErrorEnum.EXPIRED_ACCESS_TOKEN);
-
-            }else{
-                //throw new 리프레시 토큰 오류 중 만료 오류
-                throw new TokenException("TokenException", ErrorEnum.EXPIRED_REFRESH_TOKEN);
-
-            }
         }catch (UnsupportedJwtException e){
             //다른 구조의 jwt토큰 ( jwt 토큰 구조는 맞으나 서버에서 사용하는 구조는 아님 == 다른 서버의 jwt 토큰)
             if(flag){
@@ -144,7 +143,6 @@ public class Jwt {
 
             }
         }
-
         return true;
     }
 

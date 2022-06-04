@@ -121,7 +121,6 @@ public class UserServiceImpl implements UserService {
             //kioskUserResponseDto.setReportCancel(true);
         } // 좌석 변경하려고 하는경우는 아래 로직을 따라감
         //else kioskUserResponseDto.setReportCancel(false);
-
         kioskUserResponseDto.setId(seat.getId());
         kioskUserResponseDto.setUser(seat.getUser());
         kioskUserResponseDto.setStatus(seat.getStatus());

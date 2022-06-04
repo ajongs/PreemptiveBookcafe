@@ -15,7 +15,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authInterceptor).addPathPatterns("/*");
+        registry.addInterceptor(authInterceptor).addPathPatterns("/**");
         //.excludePathPatterns("/경로명") --> 이 경로는 인터셉터가 가로채는 것에서 제외됨.
     }
 

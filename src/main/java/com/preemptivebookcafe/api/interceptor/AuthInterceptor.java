@@ -31,7 +31,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         String token = request.getHeader(header);
-        return jwt.validateToken(token, true);
+        jwt.validateToken(token, true);
+        return true;
     }
 
     @Override

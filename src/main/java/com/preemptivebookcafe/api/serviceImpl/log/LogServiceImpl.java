@@ -1,5 +1,7 @@
 package com.preemptivebookcafe.api.serviceImpl.log;
 
+import com.preemptivebookcafe.api.dto.log.LogRegisterResponseDto;
+import com.preemptivebookcafe.api.dto.log.LogReportResponseDto;
 import com.preemptivebookcafe.api.dto.log.LogResponseDto;
 import com.preemptivebookcafe.api.entity.Log;
 import com.preemptivebookcafe.api.entity.Seat;
@@ -65,25 +67,25 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public List<LogResponseDto> getRegisterLog() {
+    public List<LogRegisterResponseDto> getRegisterLog() {
         User user = getUserFromToken();
         Optional<List<Log>> optionalLogResponseDtoList = logRepository.findByLogEventAndUser(LogEventEnum.REGISTER, user);
         if(!optionalLogResponseDtoList.isPresent()){
-            return new ArrayList<LogResponseDto>();
+            return new ArrayList<LogRegisterResponseDto>();
         }
 
-        return convertToLogDto(optionalLogResponseDtoList.get());
+        return convertToLogDto(optionalLogResponseDtoList.get(), LogEventEnum.REGISTER);
     }
 
     @Override
-    public List<LogResponseDto> getReportLog() {
+    public List<LogReportResponseDto> getReportLog() {
         User user = getUserFromToken();
         Optional<List<Log>> optionalLogResponseDtoList = logRepository.findByLogEventAndReporter(LogEventEnum.REPORT, user);
         if(!optionalLogResponseDtoList.isPresent()){
             //throw new RequestInputException(ErrorEnum.ID_ALREADY_EXISTS);
-            return new ArrayList<LogResponseDto>();
+            return new ArrayList<LogReportResponseDto>();
         }
-        return convertToLogDto(optionalLogResponseDtoList.get());
+        return convertToLogDto(optionalLogResponseDtoList.get(), LogEventEnum.REPORT);
     }
 
     private User getUserFromToken(){
@@ -98,18 +100,32 @@ public class LogServiceImpl implements LogService {
         }
         return optionalUserEntity.get();
     }
-    private List<LogResponseDto> convertToLogDto(List<Log> logs){
-        List<LogResponseDto> logResponseDtos = new ArrayList<>();
-        for (Log log : logs) {
-            LogResponseDto logResponseDto = new LogResponseDto();
-            logResponseDto.setId(log.getId());
-            logResponseDto.setLogEvent(log.getLogEvent());
-            logResponseDto.setSeat(log.getSeat());
-            logResponseDto.setUser(log.getUser());
-            logResponseDto.setReporter(log.getReporter());
-            logResponseDto.setLogTime(log.getLogTime());
-            logResponseDtos.add(logResponseDto);
+    private List convertToLogDto(List<Log> logs, LogEventEnum status){
+        if(status.equals(LogEventEnum.REGISTER)){
+            List<LogRegisterResponseDto> logResponseDtos = new ArrayList<>();
+            for (Log log : logs) {
+                LogRegisterResponseDto logResponseDto = new LogRegisterResponseDto();
+                logResponseDto.setId(log.getId());
+                logResponseDto.setLogEvent(log.getLogEvent());
+                logResponseDto.setSeatId(log.getSeat().getId());
+                logResponseDto.setClassNo(log.getUser().getClassNo());
+                logResponseDto.setLogTime(log.getLogTime());
+                logResponseDtos.add(logResponseDto);
+            }
+            return logResponseDtos;
         }
-        return logResponseDtos;
+        else { //if(status.equals(LogEventEnum.REPORT))
+            List<LogReportResponseDto> logResponseDtos = new ArrayList<>();
+            for (Log log : logs) {
+                LogReportResponseDto logResponseDto = new LogReportResponseDto();
+                logResponseDto.setId(log.getId());
+                logResponseDto.setLogEvent(log.getLogEvent());
+                logResponseDto.setSeatId(log.getSeat().getId());
+                logResponseDto.setClassNo(log.getReporter().getClassNo());
+                logResponseDto.setLogTime(log.getLogTime());
+                logResponseDtos.add(logResponseDto);
+            }
+            return logResponseDtos;
+        }
     }
 }
