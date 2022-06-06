@@ -14,4 +14,6 @@ public interface UserService {
     User getUser();
 
     KioskUserResponseDto kioskLogin(UserRequestDto requestDto);
+
+    Map refresh();
 }

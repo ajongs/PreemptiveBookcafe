@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -33,8 +36,15 @@ public class UserController {
 
     @Auth
     @PostMapping("/test")
-    public String test(){
-        return "테스트 완료";
+    public ResponseEntity test(){
+        Map<String, String> map= new HashMap<>();
+        map.put("Test", "login 테스트 완료");
+        return ResponseEntity.ok().body(map);
+    }
+
+    @PostMapping("/user/refresh")
+    public ResponseEntity refresh(){
+        return ResponseEntity.ok().body(userService.refresh());
     }
 
 
@@ -44,4 +54,6 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(userService.kioskLogin(requestDto));
     }
+
+
 }

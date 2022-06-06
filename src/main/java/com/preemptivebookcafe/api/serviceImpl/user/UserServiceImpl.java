@@ -149,4 +149,22 @@ public class UserServiceImpl implements UserService {
         }
         return optionalUserEntity.get();
     }
+
+    @Override
+    public Map<String, String> refresh() {
+        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("Authorization");
+        boolean flag = jwt.validateToken(token, false);
+        if(flag){
+            throw new RequestInputException(ErrorEnum.NOT_REFRESH_TOKEN);
+        }
+        else{
+            Map<String, Object> payload = jwt.getPayload(token, false);
+            Map<String, String> newAccessToken = new HashMap<>();
+            newAccessToken.put(accessToken, jwt.createToken(Long.parseLong(String.valueOf(payload.get("classNo"))), accessToken));
+            newAccessToken.put(refreshToken, jwt.createToken(Long.parseLong(String.valueOf(payload.get("classNo"))), refreshToken));
+
+            return newAccessToken;
+        }
+    }
 }

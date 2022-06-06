@@ -44,7 +44,7 @@ public class Jwt {
         Calendar calendar = Calendar.getInstance();
         if (subject.equals(accessToken)) {
             calendar.add(Calendar.HOUR, 1);
-            //calendar.add(Calendar.HOUR, 1);
+            //calendar.add(Calendar.SECOND, 1);
         } else {
             calendar.add(Calendar.DATE, 8);
         }
@@ -81,11 +81,7 @@ public class Jwt {
         Map<String, Object> payload = getPayload(token, flag);
 
         String sub = (String)(payload.get("sub"));
-        if(sub.equals(accessToken) && !flag) {
-            throw new TokenException(ErrorEnum.FLAG_INVALID);
-        }else if(sub.equals(refreshToken) && flag){
-            throw new TokenException(ErrorEnum.FLAG_INVALID);
-        }
+
 
         Optional<User> optionalUser = userRepository.findByClassNo((Long.parseLong(String.valueOf(payload.get("classNo")))));
         if (!optionalUser.isPresent()) {
@@ -99,6 +95,16 @@ public class Jwt {
 
             Claims claims = Jwts.parser().setSigningKey(key.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
             String subject = claims.getSubject();
+
+            if(sub.equals(accessToken) && !flag) {
+                throw new TokenException(ErrorEnum.FLAG_INVALID);
+            }else if(sub.equals(refreshToken) && flag){
+                throw new TokenException(ErrorEnum.FLAG_INVALID);
+            }else if(!flag && sub.equals(refreshToken)){
+                return false;
+            }else if(sub.equals(accessToken) && flag){
+                return true;
+            }
 
         }catch (ExpiredJwtException e){
             //만료된 토큰
