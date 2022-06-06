@@ -60,6 +60,10 @@ public class Seat {
         this.usedThread = null;
         this.reportThread = null;
     }
+
+    public void updateSeatStatus(SeatStatus status){
+        this.status = status;
+    }
     public void updateThread(String threadName){
         usedThread = threadName;
     }

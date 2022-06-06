@@ -19,5 +19,5 @@ public class KioskUserResponseDto {
     private LocalDateTime registerAt;
     private LocalDateTime updatedAt;
 
-    //private boolean isNull;
+    private String reportCancel;
 }
