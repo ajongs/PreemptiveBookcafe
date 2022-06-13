@@ -1,6 +1,7 @@
 package com.preemptivebookcafe.api.serviceImpl.user;
 
 import com.preemptivebookcafe.api.dto.user.KioskUserResponseDto;
+import com.preemptivebookcafe.api.dto.user.UserLogoutResponseDto;
 import com.preemptivebookcafe.api.dto.user.UserRequestDto;
 import com.preemptivebookcafe.api.dto.user.UserResponseDto;
 import com.preemptivebookcafe.api.entity.Seat;
@@ -80,6 +81,8 @@ public class UserServiceImpl implements UserService {
             throw new RequestInputException(ErrorEnum.INVALID_PASSWORD);
         }
 
+        user.updateFireToken(requestDto.getFireToken());
+        userRepository.save(user);
         Map<String, String> newToken = new HashMap<>();
         newToken.put(accessToken, jwt.createToken(user.getClassNo(), accessToken));
         newToken.put(refreshToken,jwt.createToken(user.getClassNo(), refreshToken));
@@ -87,6 +90,22 @@ public class UserServiceImpl implements UserService {
         return newToken;
     }
 
+    @Override
+    public UserLogoutResponseDto logout() {
+        Long classNo = getLoginClassNo();
+        Optional<User> optionalUserEntity = userRepository.findByClassNo(classNo);
+        if(!optionalUserEntity.isPresent()){
+            throw new RequestInputException(ErrorEnum.INVALID_CLASS_NO);
+        }
+        User user = optionalUserEntity.get();
+        user.updateFireToken(null);
+        userRepository.save(user);
+
+        UserLogoutResponseDto userLogoutResponseDto = new UserLogoutResponseDto();
+        userLogoutResponseDto.setClassNo(user.getClassNo());
+        userLogoutResponseDto.setFireToken(user.getFireToken());
+        return userLogoutResponseDto;
+    }
 
     @Override
     public KioskUserResponseDto kioskLogin(UserRequestDto requestDto) {

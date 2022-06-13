@@ -1,6 +1,7 @@
 package com.preemptivebookcafe.api.service.user;
 
 import com.preemptivebookcafe.api.dto.user.KioskUserResponseDto;
+import com.preemptivebookcafe.api.dto.user.UserLogoutResponseDto;
 import com.preemptivebookcafe.api.dto.user.UserRequestDto;
 import com.preemptivebookcafe.api.dto.user.UserResponseDto;
 import com.preemptivebookcafe.api.entity.User;
@@ -16,4 +17,6 @@ public interface UserService {
     KioskUserResponseDto kioskLogin(UserRequestDto requestDto);
 
     Map refresh();
+
+    UserLogoutResponseDto logout();
 }

@@ -32,6 +32,8 @@ public class User {
     @NotNull()
     private Boolean isDeleted;
 
+    private String fireToken;
+
     @PrePersist
     public void setDefaultValue(){
         if(isDeleted == null){
@@ -47,5 +49,9 @@ public class User {
         this.password = password;
         this.email = email;
         this.salt = salt;
+    }
+
+    public void updateFireToken(String token){
+        fireToken = token;
     }
 }

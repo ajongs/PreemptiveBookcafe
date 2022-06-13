@@ -35,6 +35,13 @@ public class UserController {
     }
 
     @Auth
+    @PostMapping("/user/logout")
+    public ResponseEntity logout(){
+        return ResponseEntity.ok()
+                .body(userService.logout());
+    }
+
+    @Auth
     @PostMapping("/test")
     public ResponseEntity test(){
         Map<String, String> map= new HashMap<>();

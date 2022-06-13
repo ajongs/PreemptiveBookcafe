@@ -16,6 +16,7 @@ import com.preemptivebookcafe.api.service.async.AsyncService;
 import com.preemptivebookcafe.api.service.log.LogService;
 import com.preemptivebookcafe.api.service.seat.SeatService;
 import com.preemptivebookcafe.api.service.user.UserService;
+import com.preemptivebookcafe.api.serviceImpl.firebase.FirebaseServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class SeatServiceImpl implements SeatService {
     private final UserService userService;
     private final LogService logService;
     private final AsyncService asyncService;
+    private final FirebaseServiceImpl firebaseService;
 
     @Value("${rg_sleepTime}")
     private long registerSleepTime;
@@ -121,7 +123,12 @@ public class SeatServiceImpl implements SeatService {
         }
 
 
+
+
         Seat seat = optionalSeatEntity.get(); //TODO 나중에 자세히 보자
+        //신고 메세지 보내기
+        String token = seat.getUser().getFireToken();
+        firebaseService.sendReportMessage(token);
         long between = ChronoUnit.SECONDS.between(seat.getRegisterAt(), LocalDateTime.now());
         long remainTime =  registerSleepTime - between;
         System.out.println("------------remainTime------------"+remainTime);
