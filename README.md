@@ -28,7 +28,7 @@
 
 
 ## 사용자 어플 (안드로이드와 연동한 모습)
-<img width="670" alt="image" src="https://user-images.githubusercontent.com/35219960/176832871-ba94fd5d-6462-4a10-b64a-6f197baf62ed.png">
+<img width="674" alt="image" src="https://user-images.githubusercontent.com/35219960/176833294-fdb128f9-c097-4dda-acfe-c2cd05717fb9.png">
 <img width="673" alt="image" src="https://user-images.githubusercontent.com/35219960/176832914-5ab8add3-86ef-4519-8634-fad5594a3f5e.png">
 <img width="674" alt="image" src="https://user-images.githubusercontent.com/35219960/176832944-c805634d-9e15-4c1f-973a-4237417656e1.png">
 <img width="672" alt="image" src="https://user-images.githubusercontent.com/35219960/176832990-9d59b50f-de93-4814-91e2-2fbb14b15abc.png">
