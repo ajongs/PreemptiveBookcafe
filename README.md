@@ -20,8 +20,15 @@
    ThreadPoolExecutor을 이용해 비동기 스레드 생성 시 이름을 붙일 수 있도록 하고 스레드 풀을 관리<br>
    로직 : 생성된 스레드 이름을 DB에 저장 -> 현재 돌고 있는 모든 스레드 중 동일 이름 스레드 조회 -> 해당 스레드 interrupt -> 해당 비동기 스레드 종료
    
-## C# 응용프로그램과 연동한 모습
+## KIOSK (C# 응용프로그램과 연동한 모습)
 <img width="677" alt="image" src="https://user-images.githubusercontent.com/35219960/176832472-08e6bbe1-d0b2-47a6-bebb-ad30c0abd219.png">
 <img width="676" alt="image" src="https://user-images.githubusercontent.com/35219960/176832534-4341be41-1b2a-4de4-abe0-ada8ce40ba78.png">
 <img width="676" alt="image" src="https://user-images.githubusercontent.com/35219960/176832572-23238854-f62b-4615-b95d-797fc4229b53.png">
 <img width="670" alt="image" src="https://user-images.githubusercontent.com/35219960/176832676-6e6b6b80-c9ee-474c-8f79-42e2304da99c.png">
+
+
+## 사용자 어플 (안드로이드와 연동한 모습)
+<img width="670" alt="image" src="https://user-images.githubusercontent.com/35219960/176832871-ba94fd5d-6462-4a10-b64a-6f197baf62ed.png">
+<img width="673" alt="image" src="https://user-images.githubusercontent.com/35219960/176832914-5ab8add3-86ef-4519-8634-fad5594a3f5e.png">
+<img width="674" alt="image" src="https://user-images.githubusercontent.com/35219960/176832944-c805634d-9e15-4c1f-973a-4237417656e1.png">
+<img width="672" alt="image" src="https://user-images.githubusercontent.com/35219960/176832990-9d59b50f-de93-4814-91e2-2fbb14b15abc.png">
